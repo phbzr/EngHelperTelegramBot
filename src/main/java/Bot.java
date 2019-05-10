@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class Bot extends TelegramLongPollingBot {
 
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
-
+        Model model = new Model();
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
@@ -55,6 +56,18 @@ public class Bot extends TelegramLongPollingBot {
                         execute(sendMessage.setText(message.getText() + " Lerups KIKIPUPS!!!"));
                     } catch (TelegramApiException e){
                         e.printStackTrace();
+                    }
+                default:
+                    try {
+                        execute(sendMessage.setText(Weather.getWether(message.getText(),model)));
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        try {
+                            execute(sendMessage.setText("Город не найден!"));
+                        } catch (TelegramApiException ex) {
+                            ex.printStackTrace();
+                        }
                     }
             }
 
